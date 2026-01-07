@@ -18,7 +18,6 @@ import (
 	"BACKEND/internal/service"
 )
 
-// mockAuthService is a mock implementation of AuthService for testing
 type mockAuthService struct {
 	validatePasswordStrengthFunc func(password string) error
 	createUserFunc               func(ctx context.Context, name, email, password, dobStr, role string) (generated.CreateUserRow, error)
@@ -38,7 +37,6 @@ func (m *mockAuthService) CreateUser(ctx context.Context, name, email, password,
 	if m.createUserFunc != nil {
 		return m.createUserFunc(ctx, name, email, password, dobStr, role)
 	}
-	// Return a default user for testing
 	dob, _ := time.Parse("2006-01-02", dobStr)
 	return generated.CreateUserRow{
 		ID:   1,
@@ -84,10 +82,9 @@ func TestSignup_Success(t *testing.T) {
 	app := fiber.New()
 	logger, _ := zap.NewDevelopment()
 
-	// Create a mock auth service for this test
 	mockSvc := &mockAuthService{
 		validatePasswordStrengthFunc: func(password string) error {
-			return nil // Password is valid
+			return nil 
 		},
 		createUserFunc: func(ctx context.Context, name, email, password, dobStr, role string) (generated.CreateUserRow, error) {
 			dob, _ := time.Parse("2006-01-02", dobStr)
@@ -115,7 +112,6 @@ func TestSignup_Success(t *testing.T) {
 
 	app.Post("/auth/signup", handler.Signup)
 
-	// Test with valid request
 	reqBody := models.SignupRequest{
 		Name:     "John Doe",
 		Email:    "john@example.com",
@@ -132,8 +128,6 @@ func TestSignup_Success(t *testing.T) {
 		t.Fatalf("Failed to send request: %v", err)
 	}
 
-	// Note: This will fail without a real database, but tests the validation logic
-	// In a real test, you'd mock the repository or use a test database
 	if resp.StatusCode != fiber.StatusCreated && resp.StatusCode != fiber.StatusInternalServerError {
 		t.Errorf("Expected status 201 or 500, got %d", resp.StatusCode)
 	}
@@ -173,7 +167,7 @@ func TestSignup_WeakPassword(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	mockSvc := &mockAuthService{
 		validatePasswordStrengthFunc: func(password string) error {
-			return service.ErrPasswordTooShort // Simulate weak password
+			return service.ErrPasswordTooShort 
 		},
 	}
 	handler := NewAuthHandler(mockSvc, logger, false)
@@ -299,7 +293,7 @@ func TestSignup_InvalidDateFormat(t *testing.T) {
 		Name:     "John Doe",
 		Email:    "john@example.com",
 		Password: "SecurePass123!",
-		Dob:      "01/01/1990", // Wrong format
+		Dob:      "01/01/1990", 
 	}
 
 	body, _ := json.Marshal(reqBody)
