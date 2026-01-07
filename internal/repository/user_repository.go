@@ -26,7 +26,6 @@ func (r *UserRepository) Create(ctx context.Context, name string, dob time.Time)
 	})
 }
 
-// CreateWithAuth creates a new user with authentication fields
 func (r *UserRepository) CreateWithAuth(ctx context.Context, name, email, passwordHash, role string, dob time.Time) (generated.CreateUserRow, error) {
 	return r.queries.CreateUser(ctx, generated.CreateUserParams{
 		Name: name,
@@ -36,7 +35,7 @@ func (r *UserRepository) CreateWithAuth(ctx context.Context, name, email, passwo
 		},
 		Email:        email,
 		PasswordHash: passwordHash,
-		Column5:      role, // role parameter (COALESCE in SQL)
+		Column5:      role, 
 	})
 }
 
@@ -74,7 +73,7 @@ func (r *UserRepository) Count(ctx context.Context) (int64, error) {
 	return r.queries.CountUsers(ctx)
 }
 
-// GetByEmail retrieves a user by email address
+
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (generated.User, error) {
 	return r.queries.GetUserByEmail(ctx, email)
 }
