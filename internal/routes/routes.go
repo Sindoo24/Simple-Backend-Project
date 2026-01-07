@@ -8,15 +8,15 @@ import (
 )
 
 func Register(app *fiber.App, h *handler.UserHandler, authHandler *handler.AuthHandler, adminHandler *handler.AdminHandler, jwtSecret string) {
-	// Global middleware
+	
 	app.Use(middleware.RequestID())
 	app.Use(middleware.Logger())
 
-	// Public routes (no authentication required)
+	
 	app.Post("/auth/signup", authHandler.Signup)
 	app.Post("/auth/login", authHandler.Login)
 
-	// Protected routes (authentication required)
+	
 	protected := app.Group("/users")
 	protected.Use(middleware.Auth(jwtSecret))
 	{
@@ -28,7 +28,7 @@ func Register(app *fiber.App, h *handler.UserHandler, authHandler *handler.AuthH
 		protected.Delete("/:id", h.Delete)
 	}
 
-	// Admin routes (authentication + admin role required)
+	
 	admin := app.Group("/admin")
 	admin.Use(middleware.Auth(jwtSecret))
 	admin.Use(middleware.RequireRole("admin"))
